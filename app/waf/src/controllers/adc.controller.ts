@@ -37,9 +37,9 @@ import {
 import {
   Adc,
   Tenant,
-  ActionsBody,
+  SetupBody,
   ActionsResponse,
-  ActionsRequest,
+  SetupRequest,
   AS3PartitionRequest,
   as3Name,
 } from '../models';
@@ -455,8 +455,8 @@ export class AdcController extends BaseController {
   })
   async provision(
     @param(Schema.pathParameter('adcId', 'ADC resource ID')) id: string,
-    @requestBody(Schema.createRequest(ActionsRequest, 'actions request'))
-    actionBody: ActionsBody,
+    @requestBody(Schema.createRequest(SetupRequest, 'actions request'))
+    actionBody: SetupBody,
   ): Promise<object | undefined> {
     let adc = await this.adcRepository.findById(id, undefined, {
       tenantId: await this.tenantId,
@@ -472,20 +472,18 @@ export class AdcController extends BaseController {
       throw new HttpErrors.UnprocessableEntity(
         `Adc status is ' ${adc.status}. Cannot be operated on, please wait for its finish.`,
       );
-
-    switch (Object.keys(actionBody)[0]) {
-      case 'setup':
-        if (await this.adcStCtr.readyTo(AdcState.TRUSTED)) {
-          this.setupOn(adc, addonReq);
-          return {id: adc.id};
-        } else
-          throw new HttpErrors.UnprocessableEntity(
-            `Not ready for bigip VE to : ${AdcState.ONBOARDED}`,
-          );
-      default:
+    if(Object.keys(actionBody)[0]==='setup'){
+      if (await this.adcStCtr.readyTo(AdcState.TRUSTED)) {
+        this.setupOn(adc, addonReq);
+        return {id: adc.id};
+      } else
         throw new HttpErrors.UnprocessableEntity(
-          'Not supported: ' + Object.keys(actionBody)[0],
+          `Not ready for bigip VE to : ${AdcState.ONBOARDED}`,
         );
+    }else{
+      throw new HttpErrors.UnprocessableEntity(
+        'Not supported: ' + Object.keys(actionBody)[0],
+      );
     }
   }
 

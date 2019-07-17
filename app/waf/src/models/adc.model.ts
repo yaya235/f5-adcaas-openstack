@@ -17,17 +17,8 @@
 import {model, property, Entity} from '@loopback/repository';
 import {CommonEntity} from '.';
 
-export type ActionsBody = CreateBody & DeleteBody & SetupBody;
 
-type CreateBody = {
-  create: null;
-};
-
-type DeleteBody = {
-  delete: null;
-};
-
-type SetupBody = {
+export type SetupBody = {
   setup: undefined;
 };
 
@@ -191,7 +182,7 @@ export class ActionsResponse extends Entity {
   id: string;
 }
 
-export class ActionsRequest extends Entity {
+export class SetupRequest extends Entity {
   @property({
     type: 'string',
     required: true,
@@ -200,5 +191,5 @@ export class ActionsRequest extends Entity {
       example: 'null',
     },
   })
-  action: ActionsBody;
+  action: SetupBody;
 }
