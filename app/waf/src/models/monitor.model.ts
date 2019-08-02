@@ -52,6 +52,11 @@ export class Monitor extends CommonEntity {
       response: true,
       example: '192.168.10.123',
     },
+    openapi: {
+      format: 'ipv4',
+      minLength: 1,
+      maxLength: 20,
+    },
   })
   targetAddress: string;
 
@@ -63,6 +68,10 @@ export class Monitor extends CommonEntity {
       update: true,
       response: true,
       example: 8080,
+    },
+    openapi: {
+      minLength: 1,
+      maxLength: 65535,
     },
   })
   targetPort: number;
@@ -76,6 +85,9 @@ export class Monitor extends CommonEntity {
       update: true,
       response: true,
       example: 'tcp',
+      openapi: {
+        enum: ['tcp', 'udp'],
+      },
     },
     as3: {},
   })

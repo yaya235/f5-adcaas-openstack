@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {Client, expect, toJSON} from '@loopback/testlab';
-import {WafApplication} from '../..';
+import { Client, expect, toJSON } from '@loopback/testlab';
+import { WafApplication } from '../..';
 import {
   setupApplication,
   teardownApplication,
@@ -42,7 +42,7 @@ describe('MointorController', () => {
 
   before('setupApplication', async () => {
     await setupDepApps();
-    ({wafapp, client} = await setupApplication());
+    ({ wafapp, client } = await setupApplication());
     LetResponseWith({});
     setupEnvs();
   });
@@ -132,5 +132,44 @@ describe('MointorController', () => {
       .set('X-Auth-Token', ExpectedData.userToken)
       .set('tenant-id', ExpectedData.tenantId)
       .expect(404);
+  });
+
+
+  it('post ' + prefix + '/monitors with invalid property', async () => {
+    let request = {
+      argetAddress: 'ABC',
+    };
+    const response = await client
+      .post(prefix + '/monitors')
+      .set('X-Auth-Token', ExpectedData.userToken)
+      .set('tenant-id', ExpectedData.tenantId)
+      .send(request)
+      .expect(422);
+
+    expect(response.body.error.code).to.equal('VALIDATION_FAILED');
+  });
+
+  it('post ' + prefix + '/monitors with invalid monitortype', async () => {
+    let request = {
+      monitorType: 'ABC',
+    };
+    const response = await client
+      .post(prefix + '/monitors')
+      .set('X-Auth-Token', ExpectedData.userToken)
+      .set('tenant-id', ExpectedData.tenantId)
+      .send(request)
+      .expect(422);
+
+    expect(response.body.error.code).to.equal('VALIDATION_FAILED');
+  });
+
+  it('post ' + prefix + '/monitors with no body', async () => {
+    const response = await client
+      .post(prefix + '/monitors')
+      .set('X-Auth-Token', ExpectedData.userToken)
+      .set('tenant-id', ExpectedData.tenantId)
+      .send()
+      .expect(400);
+    expect(response.body.error.code).to.equal('BadRequestError');
   });
 });

@@ -23,7 +23,6 @@ import {
   patch,
   del,
   requestBody,
-  HttpErrors,
   RequestContext,
   RestBindings,
 } from '@loopback/rest';
@@ -63,13 +62,9 @@ export class PoolController extends BaseController {
     @requestBody(Schema.createRequest(Pool, createDesc))
     reqBody: Partial<Pool>,
   ): Promise<Response> {
-    try {
       reqBody.tenantId = await this.tenantId;
       const data = await this.poolRepository.create(reqBody);
       return new Response(Pool, data);
-    } catch (error) {
-      throw new HttpErrors.BadRequest(error.message);
-    }
   }
 
   @get(prefix + '/pools', {
